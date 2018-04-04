@@ -37,7 +37,7 @@ class LibZotero(object):
 	attachment_query = u"""
 		select items.itemID, itemAttachments.path, itemAttachments.itemID
 		from items, itemAttachments
-		where items.itemID = itemAttachments.sourceItemID
+		where items.itemID = itemAttachments.parentItemID
 		"""
 
 	info_query = u"""
@@ -55,12 +55,11 @@ class LibZotero(object):
 		"""
 
 	author_query = u"""
-		select items.itemID, creatorData.lastName
-		from items, itemCreators, creators, creatorData, creatorTypes
+		select items.itemID, creators.lastName
+		from items, itemCreators, creators, creatorTypes
 		where
 			items.itemID = itemCreators.itemID
 			and itemCreators.creatorID = creators.creatorID
-			and creators.creatorDataID = creatorData.creatorDataID
 			and itemCreators.creatorTypeID = creatorTypes.creatorTypeID
 			and creatorTypes.creatorType != "editor"
 		order by itemCreators.orderIndex
@@ -142,6 +141,7 @@ class LibZotero(object):
 		except Exception as e:
 			print(e)
 			self.error = True
+
 
 	def update(self, force=False):
 
@@ -272,8 +272,9 @@ class LibZotero(object):
 							item_attachment = att[8:]
 							# The item attachment appears to be encoded in
 							# latin-1 encoding, which we don't want, so recode.
-							item_attachment = item_attachment.encode(
-								'latin-1').decode('utf-8')
+							# AD : in my case this triggers errors...
+							#item_attachment = item_attachment.encode(
+							#	 'latin-1').decode('utf-8')
 							attachment_id = item[2]
 							if item_attachment[-4:].lower() in \
 								self.attachment_ext:
