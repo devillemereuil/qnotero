@@ -68,9 +68,12 @@ class QnoteroResults(QListWidget):
 		if zoteroItem.fulltext == None:
 			return
 		
-		path = zoteroItem.fulltext.encode("latin-1")
+		#path = zoteroItem.fulltext.encode("latin-1")   # Don't encode in latin-1...
+		path = zoteroItem.fulltext
+		print("Path: %s" % path)
 		tmpName = '%s.pdf' % zoteroItem.filename_format()
 		tmpFile = os.path.join(tempfile.gettempdir(), tmpName)
+		print("Temp file: %s" % tmpFile)
 		suffix = 1
 		while os.path.exists(tmpFile):
 			tmpName = '%s-%d.pdf' % (zoteroItem.filename_format(), suffix)
